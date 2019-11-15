@@ -1,0 +1,157 @@
+module mobilegateway {
+  yang-version 1.1;
+  namespace "http://polycube.network/mobilegateway";
+  prefix "mobilegateway";
+
+  import polycube-base { prefix "polycube-base"; }
+  import polycube-standard-base { prefix "polycube-standard-base"; }
+
+  import ietf-inet-types { prefix "inet"; }
+  import ietf-yang-types { prefix "yang";  }
+
+  organization "Polycube open source project";
+  description "YANG data model for the Polycube Mobile Gateway service";
+
+  polycube-base:service-description "Mobile Gateway Service";
+  polycube-base:service-version "1.0";
+  polycube-base:service-name "mobilegateway";
+  polycube-base:service-min-kernel-version "4.15.0";
+
+  uses "polycube-standard-base:standard-base-yang-module" {
+    augment ports {
+      leaf ip {
+        type inet:ipv4-prefix;
+        description "IP address and prefix of the port";
+        polycube-base:cli-example "10.0.0.1/24";
+      }
+
+      list secondaryip {
+        description "Additional IP addresses for the port";
+        key "ip";
+        leaf ip {
+          type inet:ipv4-prefix;
+          description "Secondary IP address and prefix of the port";
+          polycube-base:cli-example "10.0.0.2/24";
+        }
+      }
+
+      leaf mac {
+        type yang:mac-address;
+        description "MAC address of the port";
+        polycube-base:cli-example "B3:23:45:F5:3A";
+      }
+
+      leaf direction {
+        type enumeration {
+          enum UE;
+          enum PDN;
+        }
+        default PDN;
+        description "Whether the port faces User Equipments (UE) or an external Packet Data Network (PDN)";
+        polycube-base:cli-example "UE";
+      }
+    }
+  }
+
+  list route {
+    key "network nexthop";
+    description "Entry associated with the routing table";
+    leaf network {
+      type inet:ipv4-prefix;
+      mandatory true;
+      description "Destination network IP";
+      polycube-base:cli-example "10.0.0.0/24";
+    }
+
+    leaf nexthop {
+      type inet:ipv4-address;
+      mandatory true;
+      description "Next hop; if destination is local will be shown 'local' instead of the ip address";
+      polycube-base:cli-example "123.14.23.3";
+    }
+
+    leaf interface {
+      type string;
+      config true;
+      polycube-base:init-only-config;
+      description "Outgoing interface";
+      polycube-base:cli-example "port2";
+    }
+
+    leaf pathcost {
+      type uint32;
+      default 1;
+      description "Cost of this route";
+      polycube-base:cli-example "10";
+    }
+  }
+
+  list arp-table {
+    key "address";
+    description "Entry associated with the ARP table";
+    leaf address {
+      type inet:ip-prefix;
+      mandatory true;
+      description "Destination IP address";
+      polycube-base:cli-example "123.13.34.0";
+    }
+
+    leaf mac {
+      type yang:mac-address;
+      mandatory true;
+      description "Destination MAC address";
+      polycube-base:cli-example "C5:13:2D:36:27:9B";
+    }
+
+    leaf interface {
+      type string;
+      mandatory true;
+      description "Outgoing interface";
+      polycube-base:cli-example "port2";
+    }
+  }
+  
+  list user-equipment {
+    key "ip";
+    description "User Equipment handled by the Gateway";
+  
+    leaf ip {
+        type inet:ipv4-address;
+        mandatory true;
+        description "IP address of the User Equipment";
+        polycube-base:cli-example "123.14.23.3";
+    }
+    
+    leaf tunnel-endpoint {
+        type inet:ipv4-address;
+        mandatory true;
+        description "IP address of the Base Station that connects the User Equipment";
+        polycube-base:cli-example "123.14.23.3";
+    }
+    
+    leaf teid {
+        type uint32;
+        mandatory true;
+        description "Tunnel Endpoint ID of the GTP tunnel used by the User Equipment";
+        polycube-base:cli-example "56000";
+    }
+    
+    leaf rate-limit {
+        type uint32;
+        description "Rate limit for the traffic exchanged by the User Equipment (in pps)";
+        polycube-base:cli-example "9000000";
+    }
+  }
+  
+  list base-station {
+    key "ip";
+    description "Base Station used to reach User Equipments";
+    
+    leaf ip {
+        type inet:ipv4-address;
+        mandatory true;
+        description "IP address of the Base Station";
+        polycube-base:cli-example "123.14.23.3";
+    }
+  }
+}
