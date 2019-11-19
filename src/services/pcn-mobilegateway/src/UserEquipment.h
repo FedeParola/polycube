@@ -66,5 +66,5 @@ class UserEquipment : public UserEquipmentBase {
 
   void insertIntoDPRoutingTable();
   void insertIntoDPUserEquipments();
-  void insertIntoDPRateLimits();
+  void insertIntoDPPacketsRates();
 };

@@ -109,6 +109,7 @@ class Mobilegateway : public MobilegatewayBase {
   void replaceBaseStation(const std::string &ip, const BaseStationJsonObject &conf) override;
   void delBaseStation(const std::string &ip) override;
   void delBaseStationList() override;
+  std::mutex& getPacketsRatesMutex();
 
   // The following methods have been added by hand
 
@@ -161,6 +162,13 @@ class Mobilegateway : public MobilegatewayBase {
   // Circular buffer
   std::map<unsigned int, CircularBuffer> arp_request_map;
 
+  // Thread to reset packets counts for rate limit
+  std::thread packets_counts_reset_thread_;
+  std::atomic<bool> quit_thread_;
+
+  // Mutex to access to packets_rates map of DP
+  std::mutex packets_rates_mutex_;
+
   // The following methods have been added by hand
 
   // Methods to manage packets coming from the fast path
@@ -184,4 +192,7 @@ class Mobilegateway : public MobilegatewayBase {
                       const int port_index);
   void remove_linux_route(const std::string &network, const std::string &prefix,
                       const std::string &nexthop, const std::string &port_name);
+
+  // Every second resets the packets count of rate limit data for every tunnel
+  void resetPacketsCounts();
 };

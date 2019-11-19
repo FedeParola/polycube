@@ -97,8 +97,8 @@ BPF_HASH(user_equipments, __be32, struct ue_data);
 // KEY: tunnel id (teid)
 // VAL:
 struct packets_rate_data {
-  __be32 limit;
-  __be32 packets_count;  // Number of packets forwarded in the current time window
+  u32 limit;
+  u32 packets_count;  // Number of packets forwarded in the current time window
 } __attribute__((packed));
 BPF_HASH(packets_rates, __be32, struct packets_rate_data);
 
@@ -559,7 +559,21 @@ RATE_LIMIT:
     goto DROP;
   }
 
-  // TODO: limit the rate
+  // Limit the rate
+  struct packets_rate_data *rate_data = packets_rates.lookup(&teid);
+  if (!rate_data) {
+    pcn_log(ctx, LOG_WARN, "Packet with unknown TEID '%d'", teid);
+    goto DROP;
+  }
+
+  if (rate_data->limit > 0) {  // Rate limit == 0 means no limit
+    if (rate_data->packets_count >= rate_data->limit) {
+      pcn_log(ctx, LOG_TRACE, "Rate limit reached for TEID '%d'", teid);
+      goto DROP;
+    } else {
+      __sync_fetch_and_add(&(rate_data->packets_count), 1);
+    }
+  }
 
   // Perform a lookup for the new packet
   k.network = ip->daddr;

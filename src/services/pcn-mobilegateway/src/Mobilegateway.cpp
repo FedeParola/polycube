@@ -27,6 +27,10 @@ Mobilegateway::Mobilegateway(const std::string name, const MobilegatewayJsonObje
   addRouteList(conf.getRoute());
   addArpTableList(conf.getArpTable());
 
+  quit_thread_ = false;
+  packets_counts_reset_thread_ =
+        std::thread(&Mobilegateway::resetPacketsCounts, this);
+
   if (get_shadow()) {
     // netlink notification
     netlink_notification_index_route_added = netlink_instance_router_.registerObserver(
@@ -53,6 +57,10 @@ Mobilegateway::Mobilegateway(const std::string name, const MobilegatewayJsonObje
 
 Mobilegateway::~Mobilegateway() {
   logger()->info("Destroying Mobilegateway instance");
+
+  quit_thread_ = true;
+  packets_counts_reset_thread_.join();
+
   if (get_shadow()) {
     netlink_instance_router_.unregisterObserver(
           polycube::polycubed::Netlink::Event::ROUTE_ADDED,
@@ -1213,4 +1221,28 @@ void Mobilegateway::remove_linux_route(const std::string &network,
   std::tuple<string, string> key_cp(route, nexthop);
   if (routes_.count(key_cp) != 0)
     routes_.erase(key_cp);
+}
+
+std::mutex& Mobilegateway::getPacketsRatesMutex() {
+  return packets_rates_mutex_;
+}
+
+void Mobilegateway::resetPacketsCounts() {
+  while (!quit_thread_) {
+    sleep(1);
+
+    packets_rates_mutex_.lock();
+
+    logger()->trace("Clearing packets counts");
+    auto packets_rates = get_hash_table<uint32_t, struct packets_rate_data>("packets_rates");
+    for (auto pr : packets_rates.get_all()) {
+      pr.second.packets_count = 0;
+      packets_rates.set(pr.first, pr.second);
+    }
+    logger()->trace("Packets counts cleared");
+
+    packets_rates_mutex_.unlock();
+  }
+
+  logger()->debug("Packets counts reset thread ending");
 }

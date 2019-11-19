@@ -30,7 +30,7 @@ UserEquipment::UserEquipment(Mobilegateway &parent, const UserEquipmentJsonObjec
   // Add UE data to the data plane
   this->insertIntoDPRoutingTable();
   this->insertIntoDPUserEquipments();
-  this->insertIntoDPRateLimits();
+  this->insertIntoDPPacketsRates();
 }
 
 // Removes UE data from the data plane
@@ -93,7 +93,7 @@ void UserEquipment::setTeid(const uint32_t &value) {
 
   // Update into DP
   this->insertIntoDPUserEquipments();
-  this->insertIntoDPRateLimits();
+  this->insertIntoDPPacketsRates();
 }
 
 uint32_t UserEquipment::getRateLimit() {
@@ -108,7 +108,7 @@ void UserEquipment::setRateLimit(const uint32_t &value) {
   rate_limit_ = value;
 
   // Update into DP
-  this->insertIntoDPRateLimits();
+  this->insertIntoDPPacketsRates();
 }
 
 void UserEquipment::insertIntoDPRoutingTable() {
@@ -141,7 +141,9 @@ void UserEquipment::insertIntoDPUserEquipments() {
   user_equipments.set(ip_string_to_nbo_uint(ip_), value);
 }
 
-void UserEquipment::insertIntoDPRateLimits() {
+void UserEquipment::insertIntoDPPacketsRates() {
+  std::lock_guard<std::mutex> guard(parent_.getPacketsRatesMutex());
+
   auto packets_rates = parent_.get_hash_table<uint32_t, struct packets_rate_data>("packets_rates");
 
   struct packets_rate_data value = {
