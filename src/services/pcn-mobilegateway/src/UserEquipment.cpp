@@ -30,7 +30,7 @@ UserEquipment::UserEquipment(Mobilegateway &parent, const UserEquipmentJsonObjec
   // Add UE data to the data plane
   this->insertIntoDPRoutingTable();
   this->insertIntoDPUserEquipments();
-  this->insertIntoDPPacketsRates();
+  this->insertIntoDPTrafficRates();
 }
 
 // Removes UE data from the data plane
@@ -49,9 +49,9 @@ UserEquipment::~UserEquipment() {
   auto user_equipments = parent_.get_hash_table<uint32_t, struct ue_data>("user_equipments");
   user_equipments.remove(nbo_ip);
 
-  // Remove packets rate data
-  auto packets_rates = parent_.get_hash_table<uint32_t, struct packets_rate_data>("packets_rates");
-  packets_rates.remove(htonl(teid_));
+  // Remove rate data
+  auto traffic_rates = parent_.get_hash_table<uint32_t, struct rate_data>("traffic_rates");
+  traffic_rates.remove(htonl(teid_));
 }
 
 std::string UserEquipment::getIp() {
@@ -93,7 +93,7 @@ void UserEquipment::setTeid(const uint32_t &value) {
 
   // Update into DP
   this->insertIntoDPUserEquipments();
-  this->insertIntoDPPacketsRates();
+  this->insertIntoDPTrafficRates();
 }
 
 uint32_t UserEquipment::getRateLimit() {
@@ -108,7 +108,7 @@ void UserEquipment::setRateLimit(const uint32_t &value) {
   rate_limit_ = value;
 
   // Update into DP
-  this->insertIntoDPPacketsRates();
+  this->insertIntoDPTrafficRates();
 }
 
 void UserEquipment::insertIntoDPRoutingTable() {
@@ -141,15 +141,15 @@ void UserEquipment::insertIntoDPUserEquipments() {
   user_equipments.set(ip_string_to_nbo_uint(ip_), value);
 }
 
-void UserEquipment::insertIntoDPPacketsRates() {
-  std::lock_guard<std::mutex> guard(parent_.getPacketsRatesMutex());
+void UserEquipment::insertIntoDPTrafficRates() {
+  std::lock_guard<std::mutex> guard(parent_.getTrafficRatesMutex());
 
-  auto packets_rates = parent_.get_hash_table<uint32_t, struct packets_rate_data>("packets_rates");
+  auto traffic_rates = parent_.get_hash_table<uint32_t, struct rate_data>("traffic_rates");
 
-  struct packets_rate_data value = {
+  struct rate_data value = {
     .limit = rate_limit_,
-    .packets_count = 0,
+    .forwarded_bits = 0,
   };
 
-  packets_rates.set(htonl(teid_), value);
+  traffic_rates.set(htonl(teid_), value);
 }

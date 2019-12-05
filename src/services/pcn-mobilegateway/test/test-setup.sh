@@ -63,5 +63,5 @@ polycubectl mgw1 base-station add 172.0.1.1
 polycubectl mgw1 base-station add 172.0.2.1
 
 # Add UEs
-polycubectl mgw1 user-equipment add 172.99.0.1 tunnel-endpoint=172.0.1.1 teid=100  rate-limit=200
+polycubectl mgw1 user-equipment add 172.99.0.1 tunnel-endpoint=172.0.1.1 teid=100  rate-limit=100000
 polycubectl mgw1 user-equipment add 172.99.0.2 tunnel-endpoint=172.0.2.1 teid=200

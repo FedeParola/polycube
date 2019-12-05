@@ -58,7 +58,7 @@ public:
   bool teidIsSet() const;
 
   /// <summary>
-  /// Rate limit for the traffic exchanged by the User Equipment (in pps)
+  /// Rate limit for the traffic exchanged by the User Equipment (in bps)
   /// </summary>
   uint32_t getRateLimit() const;
   void setRateLimit(uint32_t value);

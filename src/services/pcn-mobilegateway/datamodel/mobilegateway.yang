@@ -15,7 +15,7 @@ module mobilegateway {
   polycube-base:service-description "Mobile Gateway Service";
   polycube-base:service-version "1.0";
   polycube-base:service-name "mobilegateway";
-  polycube-base:service-min-kernel-version "4.15.0";
+  polycube-base:service-min-kernel-version "5.2.0";
 
   uses "polycube-standard-base:standard-base-yang-module" {
     augment ports {
@@ -138,8 +138,8 @@ module mobilegateway {
     
     leaf rate-limit {
         type uint32;
-        description "Rate limit for the traffic exchanged by the User Equipment (in pps)";
-        polycube-base:cli-example "9000000";
+        description "Rate limit for the traffic exchanged by the User Equipment (in bps)";
+        polycube-base:cli-example "10000000";
     }
   }
   

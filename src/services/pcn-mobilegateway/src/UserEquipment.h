@@ -24,9 +24,9 @@ struct ue_data {
   uint32_t teid;
 } __attribute__((packed));
 
-struct packets_rate_data {
-  uint32_t limit;
-  uint32_t packets_count;
+struct rate_data {
+  uint64_t limit;
+  uint64_t forwarded_bits;
 } __attribute__((packed));
 
 
@@ -66,5 +66,5 @@ class UserEquipment : public UserEquipmentBase {
 
   void insertIntoDPRoutingTable();
   void insertIntoDPUserEquipments();
-  void insertIntoDPPacketsRates();
+  void insertIntoDPTrafficRates();
 };

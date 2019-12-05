@@ -28,8 +28,8 @@ Mobilegateway::Mobilegateway(const std::string name, const MobilegatewayJsonObje
   addArpTableList(conf.getArpTable());
 
   quit_thread_ = false;
-  packets_counts_reset_thread_ =
-        std::thread(&Mobilegateway::resetPacketsCounts, this);
+  fwd_bits_counts_reset_thread_ =
+        std::thread(&Mobilegateway::resetFwdBitsCounts, this);
 
   if (get_shadow()) {
     // netlink notification
@@ -59,7 +59,7 @@ Mobilegateway::~Mobilegateway() {
   logger()->info("Destroying Mobilegateway instance");
 
   quit_thread_ = true;
-  packets_counts_reset_thread_.join();
+  fwd_bits_counts_reset_thread_.join();
 
   if (get_shadow()) {
     netlink_instance_router_.unregisterObserver(
@@ -1223,26 +1223,24 @@ void Mobilegateway::remove_linux_route(const std::string &network,
     routes_.erase(key_cp);
 }
 
-std::mutex& Mobilegateway::getPacketsRatesMutex() {
-  return packets_rates_mutex_;
+std::mutex& Mobilegateway::getTrafficRatesMutex() {
+  return traffic_rates_mutex_;
 }
 
-void Mobilegateway::resetPacketsCounts() {
+void Mobilegateway::resetFwdBitsCounts() {
   while (!quit_thread_) {
     sleep(1);
 
-    packets_rates_mutex_.lock();
+    traffic_rates_mutex_.lock();
 
-    logger()->trace("Clearing packets counts");
-    auto packets_rates = get_hash_table<uint32_t, struct packets_rate_data>("packets_rates");
-    for (auto pr : packets_rates.get_all()) {
-      pr.second.packets_count = 0;
-      packets_rates.set(pr.first, pr.second);
+    logger()->trace("Clearing forwarded bits counts");
+    auto traffic_rates = get_hash_table<uint32_t, struct rate_data>("traffic_rates");
+    for (auto tr : traffic_rates.get_all()) {
+      tr.second.forwarded_bits = 0;
+      traffic_rates.set(tr.first, tr.second);
     }
-    logger()->trace("Packets counts cleared");
+    logger()->trace("Forwarded bits counts cleared");
 
-    packets_rates_mutex_.unlock();
+    traffic_rates_mutex_.unlock();
   }
-
-  logger()->debug("Packets counts reset thread ending");
 }

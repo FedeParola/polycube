@@ -56,7 +56,7 @@ class UserEquipmentBase {
   virtual void setTeid(const uint32_t &value) = 0;
 
   /// <summary>
-  /// Rate limit for the traffic exchanged by the User Equipment (in pps)
+  /// Rate limit for the traffic exchanged by the User Equipment (in bps)
   /// </summary>
   virtual uint32_t getRateLimit() = 0;
   virtual void setRateLimit(const uint32_t &value) = 0;

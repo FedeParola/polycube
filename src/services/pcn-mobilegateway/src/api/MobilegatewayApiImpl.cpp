@@ -1551,7 +1551,7 @@ update_mobilegateway_user_equipment_list_by_id(const std::string &name, const st
 *
 * @param[in] name ID of name
 * @param[in] ip ID of ip
-* @param[in] value Rate limit for the traffic exchanged by the User Equipment (in pps)
+* @param[in] value Rate limit for the traffic exchanged by the User Equipment (in bps)
 *
 * Responses:
 *

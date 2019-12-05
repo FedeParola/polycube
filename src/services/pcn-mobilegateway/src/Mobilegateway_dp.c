@@ -93,14 +93,14 @@ struct ue_data {
 } __attribute__((packed));
 BPF_HASH(user_equipments, __be32, struct ue_data);
 
-// Table containing data to limit the packets rate for a certain tunnel
+// Table containing data to limit the traffic rate for a certain tunnel
 // KEY: tunnel id (teid)
 // VAL:
-struct packets_rate_data {
-  u32 limit;
-  u32 packets_count;  // Number of packets forwarded in the current time window
+struct rate_data {
+  u64 limit;
+  u64 forwarded_bits;  // Amount of bits forwarded in the current time window
 } __attribute__((packed));
-BPF_HASH(packets_rates, __be32, struct packets_rate_data);
+BPF_HASH(traffic_rates, __be32, struct rate_data);
 
 struct eth_hdr {
   __be64 dst : 48;
@@ -130,6 +130,10 @@ struct gtp1_header {	/* According to 3GPP TS 29.060. */
 #define GTP_PORT 2152
 #define GTP_TYPE_GPDU 255  // User data packet (T-PDU) plus GTP-U header 
 #define GTP_FLAGS 0x30     // Version: GTPv1, Protocol Type: GTP, Others: 0
+
+#define GTP_ENCAP_SIZE (sizeof(struct iphdr) +      \
+                        sizeof(struct udphdr) +     \
+                        sizeof(struct gtp1_header))
 
 // Pseudo IP header for UDP checksum computation
 struct ip_pseudo_hdr {
@@ -285,7 +289,7 @@ static inline int is_ether_mcast(__be64 mac_address) {
 // and given teid.
 // Returns 0 in case of success, -1 otherwise.
 static inline int gtp_encap(struct CTXTYPE *ctx, __be32 src, __be32 dst, __be32 teid) {
-  u32 len_diff = sizeof(struct iphdr) + sizeof(struct udphdr) + sizeof(struct gtp1_header);
+  u32 len_diff = GTP_ENCAP_SIZE;
 
   // Add space for encapsulation to packet buffer
 #ifdef POLYCUBE_XDP
@@ -302,15 +306,6 @@ static inline int gtp_encap(struct CTXTYPE *ctx, __be32 src, __be32 dst, __be32 
   if (data + sizeof(*eth) > data_end) {
     return -1;
   }
-
-#ifdef POLYCUBE_XDP
-  // Move the eth header at the beginning of the buffer
-  // (Since src and dst addrs are replaced in forwarding I could just set ethertype)
-  if (data + len_diff + sizeof(struct eth_hdr) > data_end) {
-    return RX_DROP;
-  }
-  memmove(eth, data + len_diff, sizeof(*eth));
-#endif
 
   struct iphdr *ip = data + sizeof(*eth);
   if ((void *)ip + sizeof(*ip) > data_end) {
@@ -395,19 +390,13 @@ static inline int gtp_decap(struct CTXTYPE *ctx, struct udphdr *udp, __be32 *tei
   }
   *teid = gtp->tid;
 
-  u32 len_diff = sizeof(struct iphdr) + sizeof(struct udphdr) + sizeof(struct gtp1_header);
+  u32 len_diff = GTP_ENCAP_SIZE;
 
   // Resize packet buffer
 #ifdef POLYCUBE_XDP
-    // Move the eth header at the new beginning of the buffer
-    // (Since src and dst addrs are replaced in forwarding I could just set ethertype)
-    if (data + len_diff + sizeof(struct eth_hdr) > data_end) {
-      return -1;
-    }
-    memmove(data + len_diff, data, sizeof(struct eth_hdr));
-    bpf_xdp_adjust_head(ctx, len_diff);
+  bpf_xdp_adjust_head(ctx, GTP_ENCAP_SIZE);
 #else
-    bpf_skb_adjust_room(ctx, 0 - len_diff, BPF_ADJ_ROOM_MAC, 0);
+  bpf_skb_adjust_room(ctx, 0 - len_diff, BPF_ADJ_ROOM_MAC, 0);
 #endif
 
   return 0;
@@ -469,7 +458,9 @@ IP:;
     return send_icmp_ttl_time_exceeded(ctx, md, in_port->ip);
   }
 
-  __be32 teid;  // Used later by UE and LOCAL branches
+  __be32 teid;                           // Used later by UE and LOCAL branches
+  u64 pkt_size = (data_end - data) * 8;  // Used later in RATE_LIMIT
+
   // Used later in FORWARD
   u16 out_port;
   struct r_port *out_port_data = NULL;
@@ -509,6 +500,8 @@ LOCAL:
         pcn_log(ctx, LOG_ERR, "Error decapsulating packet");
         goto DROP;
       }
+
+      pkt_size -= 8 * GTP_ENCAP_SIZE;
 
       goto RATE_LIMIT;
     }
@@ -559,19 +552,26 @@ RATE_LIMIT:
     goto DROP;
   }
 
+#ifdef POLYCUBE_XDP
+  // Encap/decap leaves eth header in unknown state, set ethertype
+  // (src and dst addrs are set in forwarding phase)
+  eth->proto = htons(ETH_P_IP);
+#endif
+
   // Limit the rate
-  struct packets_rate_data *rate_data = packets_rates.lookup(&teid);
+  struct rate_data *rate_data = traffic_rates.lookup(&teid);
   if (!rate_data) {
     pcn_log(ctx, LOG_WARN, "Packet with unknown TEID '%d'", teid);
     goto DROP;
   }
 
   if (rate_data->limit > 0) {  // Rate limit == 0 means no limit
-    if (rate_data->packets_count >= rate_data->limit) {
+    pcn_log(ctx, LOG_TRACE, "Packet size: %u bits", pkt_size);
+    if (rate_data->forwarded_bits + pkt_size >= rate_data->limit) {
       pcn_log(ctx, LOG_TRACE, "Rate limit reached for TEID '%d'", teid);
       goto DROP;
     } else {
-      __sync_fetch_and_add(&(rate_data->packets_count), 1);
+      __sync_fetch_and_add(&(rate_data->forwarded_bits), pkt_size);
     }
   }
 
