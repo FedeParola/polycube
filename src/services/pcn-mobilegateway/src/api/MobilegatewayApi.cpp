@@ -2137,7 +2137,7 @@ Response update_mobilegateway_user_equipment_rate_limit_by_id_handler(
   try {
     auto request_body = nlohmann::json::parse(std::string { value });
     // The conversion is done automatically by the json library
-    uint32_t unique_value = request_body;
+    uint64_t unique_value = request_body;
     update_mobilegateway_user_equipment_rate_limit_by_id(unique_name, unique_ip, unique_value);
     return { kOk, nullptr };
   } catch(const std::exception &e) {

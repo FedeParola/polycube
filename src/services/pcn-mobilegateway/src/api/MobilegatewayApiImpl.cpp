@@ -908,9 +908,9 @@ read_mobilegateway_user_equipment_list_by_id(const std::string &name) {
 * @param[in] ip ID of ip
 *
 * Responses:
-* uint32_t
+* uint64_t
 */
-uint32_t
+uint64_t
 read_mobilegateway_user_equipment_rate_limit_by_id(const std::string &name, const std::string &ip) {
   auto mobilegateway = get_cube(name);
   auto userEquipment = mobilegateway->getUserEquipment(ip);
@@ -1557,7 +1557,7 @@ update_mobilegateway_user_equipment_list_by_id(const std::string &name, const st
 *
 */
 void
-update_mobilegateway_user_equipment_rate_limit_by_id(const std::string &name, const std::string &ip, const uint32_t &value) {
+update_mobilegateway_user_equipment_rate_limit_by_id(const std::string &name, const std::string &ip, const uint64_t &value) {
   auto mobilegateway = get_cube(name);
   auto userEquipment = mobilegateway->getUserEquipment(ip);
 

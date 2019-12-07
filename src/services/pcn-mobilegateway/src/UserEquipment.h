@@ -55,14 +55,14 @@ class UserEquipment : public UserEquipmentBase {
   /// <summary>
   /// Rate limit for the traffic exchanged by the User Equipment (in pps)
   /// </summary>
-  uint32_t getRateLimit() override;
-  void setRateLimit(const uint32_t &value) override;
+  uint64_t getRateLimit() override;
+  void setRateLimit(const uint64_t &value) override;
 
  private:
   std::string ip_;
   std::string tunnel_endpoint_;
   uint32_t teid_;
-  uint32_t rate_limit_;
+  uint64_t rate_limit_;
 
   void insertIntoDPRoutingTable();
   void insertIntoDPUserEquipments();

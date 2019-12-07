@@ -85,7 +85,7 @@ namespace MobilegatewayApiImpl {
   uint32_t read_mobilegateway_route_pathcost_by_id(const std::string &name, const std::string &network, const std::string &nexthop);
   UserEquipmentJsonObject read_mobilegateway_user_equipment_by_id(const std::string &name, const std::string &ip);
   std::vector<UserEquipmentJsonObject> read_mobilegateway_user_equipment_list_by_id(const std::string &name);
-  uint32_t read_mobilegateway_user_equipment_rate_limit_by_id(const std::string &name, const std::string &ip);
+  uint64_t read_mobilegateway_user_equipment_rate_limit_by_id(const std::string &name, const std::string &ip);
   uint32_t read_mobilegateway_user_equipment_teid_by_id(const std::string &name, const std::string &ip);
   std::string read_mobilegateway_user_equipment_tunnel_endpoint_by_id(const std::string &name, const std::string &ip);
   void replace_mobilegateway_arp_table_by_id(const std::string &name, const std::string &address, const ArpTableJsonObject &value);
@@ -121,7 +121,7 @@ namespace MobilegatewayApiImpl {
   void update_mobilegateway_route_pathcost_by_id(const std::string &name, const std::string &network, const std::string &nexthop, const uint32_t &value);
   void update_mobilegateway_user_equipment_by_id(const std::string &name, const std::string &ip, const UserEquipmentJsonObject &value);
   void update_mobilegateway_user_equipment_list_by_id(const std::string &name, const std::vector<UserEquipmentJsonObject> &value);
-  void update_mobilegateway_user_equipment_rate_limit_by_id(const std::string &name, const std::string &ip, const uint32_t &value);
+  void update_mobilegateway_user_equipment_rate_limit_by_id(const std::string &name, const std::string &ip, const uint64_t &value);
   void update_mobilegateway_user_equipment_teid_by_id(const std::string &name, const std::string &ip, const uint32_t &value);
   void update_mobilegateway_user_equipment_tunnel_endpoint_by_id(const std::string &name, const std::string &ip, const std::string &value);
 

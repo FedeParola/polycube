@@ -60,8 +60,8 @@ public:
   /// <summary>
   /// Rate limit for the traffic exchanged by the User Equipment (in bps)
   /// </summary>
-  uint32_t getRateLimit() const;
-  void setRateLimit(uint32_t value);
+  uint64_t getRateLimit() const;
+  void setRateLimit(uint64_t value);
   bool rateLimitIsSet() const;
   void unsetRateLimit();
 
@@ -72,7 +72,7 @@ private:
   bool m_tunnelEndpointIsSet;
   uint32_t m_teid;
   bool m_teidIsSet;
-  uint32_t m_rateLimit;
+  uint64_t m_rateLimit;
   bool m_rateLimitIsSet;
 };
 

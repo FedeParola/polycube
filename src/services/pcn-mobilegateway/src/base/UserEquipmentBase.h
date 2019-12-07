@@ -58,8 +58,8 @@ class UserEquipmentBase {
   /// <summary>
   /// Rate limit for the traffic exchanged by the User Equipment (in bps)
   /// </summary>
-  virtual uint32_t getRateLimit() = 0;
-  virtual void setRateLimit(const uint32_t &value) = 0;
+  virtual uint64_t getRateLimit() = 0;
+  virtual void setRateLimit(const uint64_t &value) = 0;
 
   std::shared_ptr<spdlog::logger> logger();
  protected:

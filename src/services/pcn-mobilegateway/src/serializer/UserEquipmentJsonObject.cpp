@@ -45,7 +45,7 @@ UserEquipmentJsonObject::UserEquipmentJsonObject(const nlohmann::json &val) :
   }
 
   if (val.count("rate-limit")) {
-    setRateLimit(val.at("rate-limit").get<uint32_t>());
+    setRateLimit(val.at("rate-limit").get<uint64_t>());
   }
 }
 
@@ -119,11 +119,11 @@ bool UserEquipmentJsonObject::teidIsSet() const {
 
 
 
-uint32_t UserEquipmentJsonObject::getRateLimit() const {
+uint64_t UserEquipmentJsonObject::getRateLimit() const {
   return m_rateLimit;
 }
 
-void UserEquipmentJsonObject::setRateLimit(uint32_t value) {
+void UserEquipmentJsonObject::setRateLimit(uint64_t value) {
   m_rateLimit = value;
   m_rateLimitIsSet = true;
 }

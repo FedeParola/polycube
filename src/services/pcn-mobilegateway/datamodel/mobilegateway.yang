@@ -137,7 +137,7 @@ module mobilegateway {
     }
     
     leaf rate-limit {
-        type uint32;
+        type uint64;
         description "Rate limit for the traffic exchanged by the User Equipment (in bps)";
         polycube-base:cli-example "10000000";
     }

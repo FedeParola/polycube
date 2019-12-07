@@ -96,11 +96,11 @@ void UserEquipment::setTeid(const uint32_t &value) {
   this->insertIntoDPTrafficRates();
 }
 
-uint32_t UserEquipment::getRateLimit() {
+uint64_t UserEquipment::getRateLimit() {
   return rate_limit_;
 }
 
-void UserEquipment::setRateLimit(const uint32_t &value) {
+void UserEquipment::setRateLimit(const uint64_t &value) {
   if (rate_limit_ == value) {
     return;
   }
