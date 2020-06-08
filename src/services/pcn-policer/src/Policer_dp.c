@@ -44,7 +44,7 @@ static inline int limit_rate(struct CTXTYPE *ctx, struct contract *contract) {
   void *data = (void *)(long)ctx->data;
   void *data_end = (void *)(long)ctx->data_end;
   
-  u32 needed_tokens = (data_end - data) * 8;
+  int needed_tokens = (data_end - data) * 8;
   
   if (contract->tokens < needed_tokens) {
     return RX_DROP;
