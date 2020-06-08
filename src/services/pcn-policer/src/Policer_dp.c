@@ -50,7 +50,7 @@ static inline int limit_rate(struct CTXTYPE *ctx, struct contract *contract) {
     return RX_DROP;
   }
   
-  u64 new_tokens = __sync_fetch_and_add(&contract->tokens, -needed_tokens);
+  s64 new_tokens = __sync_fetch_and_add(&contract->tokens, -needed_tokens);
     
   if (new_tokens < 0) {
     return RX_DROP;
