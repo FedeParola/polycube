@@ -52,11 +52,11 @@ class Contract : public ContractBase {
 
   std::string toString();
 
+  void updateDataplane();
+
  private:
   uint32_t traffic_class_;
   ActionTypeEnum action_;
   uint64_t rate_limit_;
   uint64_t burst_limit_;
-
-  void updateDataplane();
 };

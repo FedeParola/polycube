@@ -47,10 +47,10 @@ class DefaultContract : public DefaultContractBase {
 
   std::string toString();
 
+  void updateDataplane();
+
  private:
   ActionTypeEnum action_;
   uint64_t rate_limit_;
   uint64_t burst_limit_;
-
-  void updateDataplane();
 };
