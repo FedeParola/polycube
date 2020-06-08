@@ -265,25 +265,6 @@ read_policer_contract_action_by_id(const std::string &name, const uint32_t &traf
 }
 
 /**
-* @brief   Read burst-limit by ID
-*
-* Read operation of resource: burst-limit*
-*
-* @param[in] name ID of name
-* @param[in] trafficClass ID of traffic-class
-*
-* Responses:
-* uint64_t
-*/
-uint64_t
-read_policer_contract_burst_limit_by_id(const std::string &name, const uint32_t &trafficClass) {
-  auto policer = get_cube(name);
-  auto contract = policer->getContract(trafficClass);
-  return contract->getBurstLimit();
-
-}
-
-/**
 * @brief   Read contract by ID
 *
 * Read operation of resource: contract*
@@ -355,24 +336,6 @@ read_policer_default_contract_action_by_id(const std::string &name) {
   auto policer = get_cube(name);
   auto defaultContract = policer->getDefaultContract();
   return defaultContract->getAction();
-
-}
-
-/**
-* @brief   Read burst-limit by ID
-*
-* Read operation of resource: burst-limit*
-*
-* @param[in] name ID of name
-*
-* Responses:
-* uint64_t
-*/
-uint64_t
-read_policer_default_contract_burst_limit_by_id(const std::string &name) {
-  auto policer = get_cube(name);
-  auto defaultContract = policer->getDefaultContract();
-  return defaultContract->getBurstLimit();
 
 }
 

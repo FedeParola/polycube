@@ -49,11 +49,6 @@ class DefaultContractBase {
   /// Maximum average traffic rate (in bps)
   /// </summary>
   virtual uint64_t getRateLimit() = 0;
-
-  /// <summary>
-  /// Maximum size of a burst of packets (in bits)
-  /// </summary>
-  virtual uint64_t getBurstLimit() = 0;
   virtual void updateData(DefaultContractUpdateDataInputJsonObject input) = 0;
 
   std::shared_ptr<spdlog::logger> logger();

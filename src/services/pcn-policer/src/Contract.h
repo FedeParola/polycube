@@ -43,11 +43,6 @@ class Contract : public ContractBase {
   /// </summary>
   uint64_t getRateLimit() override;
 
-  /// <summary>
-  /// Maximum size of a burst of packets (in bits)
-  /// </summary>
-  uint64_t getBurstLimit() override;
-
   void updateData(ContractUpdateDataInputJsonObject input) override;
 
   std::string toString();
@@ -58,5 +53,4 @@ class Contract : public ContractBase {
   uint32_t traffic_class_;
   ActionTypeEnum action_;
   uint64_t rate_limit_;
-  uint64_t burst_limit_;
 };

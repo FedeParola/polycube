@@ -45,12 +45,10 @@ Response delete_policer_contract_list_by_id_handler(const char *name, const Key 
 Response delete_policer_default_contract_by_id_handler(const char *name, const Key *keys, size_t num_keys);
 Response read_policer_by_id_handler(const char *name, const Key *keys, size_t num_keys);
 Response read_policer_contract_action_by_id_handler(const char *name, const Key *keys, size_t num_keys);
-Response read_policer_contract_burst_limit_by_id_handler(const char *name, const Key *keys, size_t num_keys);
 Response read_policer_contract_by_id_handler(const char *name, const Key *keys, size_t num_keys);
 Response read_policer_contract_list_by_id_handler(const char *name, const Key *keys, size_t num_keys);
 Response read_policer_contract_rate_limit_by_id_handler(const char *name, const Key *keys, size_t num_keys);
 Response read_policer_default_contract_action_by_id_handler(const char *name, const Key *keys, size_t num_keys);
-Response read_policer_default_contract_burst_limit_by_id_handler(const char *name, const Key *keys, size_t num_keys);
 Response read_policer_default_contract_by_id_handler(const char *name, const Key *keys, size_t num_keys);
 Response read_policer_default_contract_rate_limit_by_id_handler(const char *name, const Key *keys, size_t num_keys);
 Response read_policer_list_by_id_handler(const char *name, const Key *keys, size_t num_keys);

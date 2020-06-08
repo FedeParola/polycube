@@ -38,11 +38,6 @@ class DefaultContract : public DefaultContractBase {
   /// </summary>
   uint64_t getRateLimit() override;
 
-  /// <summary>
-  /// Maximum size of a burst of packets (in bits)
-  /// </summary>
-  uint64_t getBurstLimit() override;
-
   void updateData(DefaultContractUpdateDataInputJsonObject input) override;
 
   std::string toString();
@@ -52,5 +47,4 @@ class DefaultContract : public DefaultContractBase {
  private:
   ActionTypeEnum action_;
   uint64_t rate_limit_;
-  uint64_t burst_limit_;
 };

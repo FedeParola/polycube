@@ -38,13 +38,6 @@ module policer {
       polycube-base:cli-example "10000";
       polycube-base:init-only-config;
     }
-    
-    leaf burst-limit {
-      type uint64;
-      description "Maximum size of a burst of packets (in bits)";
-      polycube-base:cli-example "50000";
-      polycube-base:init-only-config;
-    }
   }
 
   grouping updatable-contract-data {

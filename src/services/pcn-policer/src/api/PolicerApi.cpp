@@ -262,31 +262,6 @@ Response read_policer_contract_action_by_id_handler(
   }
 }
 
-Response read_policer_contract_burst_limit_by_id_handler(
-  const char *name, const Key *keys,
-  size_t num_keys ) {
-  // Getting the path params
-  std::string unique_name { name };
-  uint32_t unique_trafficClass;
-  for (size_t i = 0; i < num_keys; ++i) {
-    if (!strcmp(keys[i].name, "traffic-class")) {
-      unique_trafficClass = keys[i].value.uint32;
-      break;
-    }
-  }
-
-
-  try {
-
-    auto x = read_policer_contract_burst_limit_by_id(unique_name, unique_trafficClass);
-    nlohmann::json response_body;
-    response_body = x;
-    return { kOk, ::strdup(response_body.dump().c_str()) };
-  } catch(const std::exception &e) {
-    return { kGenericError, ::strdup(e.what()) };
-  }
-}
-
 Response read_policer_contract_by_id_handler(
   const char *name, const Key *keys,
   size_t num_keys ) {
@@ -367,23 +342,6 @@ Response read_policer_default_contract_action_by_id_handler(
     auto x = read_policer_default_contract_action_by_id(unique_name);
     nlohmann::json response_body;
     response_body = DefaultContractJsonObject::ActionTypeEnum_to_string(x);
-    return { kOk, ::strdup(response_body.dump().c_str()) };
-  } catch(const std::exception &e) {
-    return { kGenericError, ::strdup(e.what()) };
-  }
-}
-
-Response read_policer_default_contract_burst_limit_by_id_handler(
-  const char *name, const Key *keys,
-  size_t num_keys ) {
-  // Getting the path params
-  std::string unique_name { name };
-
-  try {
-
-    auto x = read_policer_default_contract_burst_limit_by_id(unique_name);
-    nlohmann::json response_body;
-    response_body = x;
     return { kOk, ::strdup(response_body.dump().c_str()) };
   } catch(const std::exception &e) {
     return { kGenericError, ::strdup(e.what()) };
