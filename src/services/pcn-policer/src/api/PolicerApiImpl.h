@@ -48,12 +48,10 @@ namespace PolicerApiImpl {
   void delete_policer_default_contract_by_id(const std::string &name);
   PolicerJsonObject read_policer_by_id(const std::string &name);
   ActionTypeEnum read_policer_contract_action_by_id(const std::string &name, const uint32_t &trafficClass);
-  uint64_t read_policer_contract_burst_limit_by_id(const std::string &name, const uint32_t &trafficClass);
   ContractJsonObject read_policer_contract_by_id(const std::string &name, const uint32_t &trafficClass);
   std::vector<ContractJsonObject> read_policer_contract_list_by_id(const std::string &name);
   uint64_t read_policer_contract_rate_limit_by_id(const std::string &name, const uint32_t &trafficClass);
   ActionTypeEnum read_policer_default_contract_action_by_id(const std::string &name);
-  uint64_t read_policer_default_contract_burst_limit_by_id(const std::string &name);
   DefaultContractJsonObject read_policer_default_contract_by_id(const std::string &name);
   uint64_t read_policer_default_contract_rate_limit_by_id(const std::string &name);
   std::vector<PolicerJsonObject> read_policer_list_by_id();

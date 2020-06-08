@@ -60,21 +60,11 @@ public:
   bool rateLimitIsSet() const;
   void unsetRateLimit();
 
-  /// <summary>
-  /// Maximum size of a burst of packets (in bits)
-  /// </summary>
-  uint64_t getBurstLimit() const;
-  void setBurstLimit(uint64_t value);
-  bool burstLimitIsSet() const;
-  void unsetBurstLimit();
-
 private:
   ActionTypeEnum m_action;
   bool m_actionIsSet;
   uint64_t m_rateLimit;
   bool m_rateLimitIsSet;
-  uint64_t m_burstLimit;
-  bool m_burstLimitIsSet;
 };
 
 }

@@ -20,14 +20,12 @@ namespace model {
 ContractUpdateDataInputJsonObject::ContractUpdateDataInputJsonObject() {
   m_actionIsSet = false;
   m_rateLimitIsSet = false;
-  m_burstLimitIsSet = false;
 }
 
 ContractUpdateDataInputJsonObject::ContractUpdateDataInputJsonObject(const nlohmann::json &val) :
   JsonObjectBase(val) {
   m_actionIsSet = false;
   m_rateLimitIsSet = false;
-  m_burstLimitIsSet = false;
 
 
   if (val.count("action")) {
@@ -36,10 +34,6 @@ ContractUpdateDataInputJsonObject::ContractUpdateDataInputJsonObject(const nlohm
 
   if (val.count("rate-limit")) {
     setRateLimit(val.at("rate-limit").get<uint64_t>());
-  }
-
-  if (val.count("burst-limit")) {
-    setBurstLimit(val.at("burst-limit").get<uint64_t>());
   }
 }
 
@@ -55,10 +49,6 @@ nlohmann::json ContractUpdateDataInputJsonObject::toJson() const {
 
   if (m_rateLimitIsSet) {
     val["rate-limit"] = m_rateLimit;
-  }
-
-  if (m_burstLimitIsSet) {
-    val["burst-limit"] = m_burstLimit;
   }
 
   return val;
@@ -118,23 +108,6 @@ bool ContractUpdateDataInputJsonObject::rateLimitIsSet() const {
 
 void ContractUpdateDataInputJsonObject::unsetRateLimit() {
   m_rateLimitIsSet = false;
-}
-
-uint64_t ContractUpdateDataInputJsonObject::getBurstLimit() const {
-  return m_burstLimit;
-}
-
-void ContractUpdateDataInputJsonObject::setBurstLimit(uint64_t value) {
-  m_burstLimit = value;
-  m_burstLimitIsSet = true;
-}
-
-bool ContractUpdateDataInputJsonObject::burstLimitIsSet() const {
-  return m_burstLimitIsSet;
-}
-
-void ContractUpdateDataInputJsonObject::unsetBurstLimit() {
-  m_burstLimitIsSet = false;
 }
 
 

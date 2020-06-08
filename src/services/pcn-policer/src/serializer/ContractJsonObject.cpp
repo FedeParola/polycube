@@ -21,7 +21,6 @@ ContractJsonObject::ContractJsonObject() {
   m_trafficClassIsSet = false;
   m_actionIsSet = false;
   m_rateLimitIsSet = false;
-  m_burstLimitIsSet = false;
 }
 
 ContractJsonObject::ContractJsonObject(const nlohmann::json &val) :
@@ -29,7 +28,6 @@ ContractJsonObject::ContractJsonObject(const nlohmann::json &val) :
   m_trafficClassIsSet = false;
   m_actionIsSet = false;
   m_rateLimitIsSet = false;
-  m_burstLimitIsSet = false;
 
 
   if (val.count("traffic-class")) {
@@ -42,10 +40,6 @@ ContractJsonObject::ContractJsonObject(const nlohmann::json &val) :
 
   if (val.count("rate-limit")) {
     setRateLimit(val.at("rate-limit").get<uint64_t>());
-  }
-
-  if (val.count("burst-limit")) {
-    setBurstLimit(val.at("burst-limit").get<uint64_t>());
   }
 }
 
@@ -65,10 +59,6 @@ nlohmann::json ContractJsonObject::toJson() const {
 
   if (m_rateLimitIsSet) {
     val["rate-limit"] = m_rateLimit;
-  }
-
-  if (m_burstLimitIsSet) {
-    val["burst-limit"] = m_burstLimit;
   }
 
   return val;
@@ -141,23 +131,6 @@ bool ContractJsonObject::rateLimitIsSet() const {
 
 void ContractJsonObject::unsetRateLimit() {
   m_rateLimitIsSet = false;
-}
-
-uint64_t ContractJsonObject::getBurstLimit() const {
-  return m_burstLimit;
-}
-
-void ContractJsonObject::setBurstLimit(uint64_t value) {
-  m_burstLimit = value;
-  m_burstLimitIsSet = true;
-}
-
-bool ContractJsonObject::burstLimitIsSet() const {
-  return m_burstLimitIsSet;
-}
-
-void ContractJsonObject::unsetBurstLimit() {
-  m_burstLimitIsSet = false;
 }
 
 

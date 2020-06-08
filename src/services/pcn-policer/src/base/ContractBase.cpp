@@ -28,7 +28,6 @@ ContractJsonObject ContractBase::toJsonObject() {
   conf.setTrafficClass(getTrafficClass());
   conf.setAction(getAction());
   conf.setRateLimit(getRateLimit());
-  conf.setBurstLimit(getBurstLimit());
 
   return conf;
 }

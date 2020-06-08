@@ -27,7 +27,6 @@ DefaultContractJsonObject DefaultContractBase::toJsonObject() {
 
   conf.setAction(getAction());
   conf.setRateLimit(getRateLimit());
-  conf.setBurstLimit(getBurstLimit());
 
   return conf;
 }

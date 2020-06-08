@@ -21,14 +21,12 @@ DefaultContractJsonObject::DefaultContractJsonObject() {
   m_action = ActionTypeEnum::PASS;
   m_actionIsSet = true;
   m_rateLimitIsSet = false;
-  m_burstLimitIsSet = false;
 }
 
 DefaultContractJsonObject::DefaultContractJsonObject(const nlohmann::json &val) :
   JsonObjectBase(val) {
   m_actionIsSet = false;
   m_rateLimitIsSet = false;
-  m_burstLimitIsSet = false;
 
 
   if (val.count("action")) {
@@ -37,10 +35,6 @@ DefaultContractJsonObject::DefaultContractJsonObject(const nlohmann::json &val) 
 
   if (val.count("rate-limit")) {
     setRateLimit(val.at("rate-limit").get<uint64_t>());
-  }
-
-  if (val.count("burst-limit")) {
-    setBurstLimit(val.at("burst-limit").get<uint64_t>());
   }
 }
 
@@ -56,10 +50,6 @@ nlohmann::json DefaultContractJsonObject::toJson() const {
 
   if (m_rateLimitIsSet) {
     val["rate-limit"] = m_rateLimit;
-  }
-
-  if (m_burstLimitIsSet) {
-    val["burst-limit"] = m_burstLimit;
   }
 
   return val;
@@ -119,23 +109,6 @@ bool DefaultContractJsonObject::rateLimitIsSet() const {
 
 void DefaultContractJsonObject::unsetRateLimit() {
   m_rateLimitIsSet = false;
-}
-
-uint64_t DefaultContractJsonObject::getBurstLimit() const {
-  return m_burstLimit;
-}
-
-void DefaultContractJsonObject::setBurstLimit(uint64_t value) {
-  m_burstLimit = value;
-  m_burstLimitIsSet = true;
-}
-
-bool DefaultContractJsonObject::burstLimitIsSet() const {
-  return m_burstLimitIsSet;
-}
-
-void DefaultContractJsonObject::unsetBurstLimit() {
-  m_burstLimitIsSet = false;
 }
 
 
