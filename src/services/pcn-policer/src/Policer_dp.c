@@ -24,16 +24,15 @@ enum {
   ACTION_DROP
 };
 
-struct bucket {
-  u64 tokens;       // 1 bit = 1000000 tokens
-  u64 refill_rate;  // tokens/us
-  u64 capacity;
-  u64 last_update;  // timestamp in us
+struct window {
+  u64 start;  // Timestamp of window start in ns
+  u64 size;   // ns
+  u64 rate;   // bits/ns
 };
 
 struct contract {
   u8 action;
-  struct bucket bucket;
+  struct window window;
   struct bpf_spin_lock lock;
 };
 
@@ -49,39 +48,25 @@ BPF_TABLE_SHARED("hash", u32, struct contract, contracts, MAX_CONTRACTS);
 
 
 static inline int limit_rate(struct CTXTYPE *ctx, struct contract *contract) {
-  struct bucket *bucket = &contract->bucket;
+  u8 retval;
+  struct window *window = &contract->window;
   void *data = (void *)(long)ctx->data;
   void *data_end = (void *)(long)ctx->data_end;
 
-  u64 curtime = bpf_ktime_get_ns() / 1000; // In us
+  u64 needed_time = (data_end - data) * 8 * 1000000000 / window->rate;
+
+  u64 now = bpf_ktime_get_ns();
   
   bpf_spin_lock(&contract->lock);
 
-  // Refill tokens
-  // If last_update == 0 the bucket is new, no need to add tokens
-  if (bucket->last_update == 0) {
-    bucket->last_update = curtime;
-  
-  } else if (curtime > bucket->last_update){
-    u64 new_tokens =
-        (curtime - bucket->last_update) * bucket->refill_rate;
-    if (new_tokens > 0) {
-      bucket->tokens += new_tokens;
-      if (bucket->tokens > bucket->capacity) {
-        bucket->tokens = bucket->capacity;
-      }
-      bucket->last_update = curtime;
-    }
-  }
-
-  // Consume tokens
-  u32 needed_tokens = (data_end - data) * 8 * 1000000;
-  u8 retval;
-  if (bucket->tokens >= needed_tokens) {
-    bucket->tokens -= needed_tokens;
+  if (window->start + needed_time > now) {
+    retval = RX_DROP;
+  } else if (window->start + window->size < now) {
+    window->start = now - window->size + needed_time;
     retval = RX_OK;
   } else {
-    retval = RX_DROP;
+    window->start += needed_time;
+    retval = RX_OK;
   }
 
   bpf_spin_unlock(&contract->lock);

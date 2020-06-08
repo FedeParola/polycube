@@ -22,17 +22,16 @@
 
 #define MAX_CONTRACTS 100000
 
-struct bucket {
-  uint64_t tokens;       // 1 bit = 1000000 tokens
-  uint64_t refill_rate;  // tokens/us
-  uint64_t capacity;
-  uint64_t last_update;  // timestamp in us
+struct window {
+  uint64_t start;  // Timestamp of window start in ns
+  uint64_t size;   // ns
+  uint64_t rate;   // bits/ns
 };
 
 struct contract {
   uint8_t action;
-  struct bucket bucket;
-  uint32_t reserved;     // Used in kernel to store the spinlock
+  struct window window;
+  uint32_t reserved;   // Used in kernel to store the spinlock
 };
 
 using namespace polycube::service::model;
