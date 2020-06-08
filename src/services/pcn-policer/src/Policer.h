@@ -22,17 +22,9 @@
 
 #define MAX_CONTRACTS 100000
 
-struct bucket {
-  uint64_t tokens;       // 1 bit = 1000000 tokens
-  uint64_t refill_rate;  // tokens/us
-  uint64_t capacity;
-  uint64_t last_update;  // timestamp in us
-};
-
 struct contract {
   uint8_t action;
-  struct bucket bucket;
-  uint32_t reserved;     // Used in kernel to store the spinlock
+  int64_t tokens;
 };
 
 using namespace polycube::service::model;
@@ -70,4 +62,12 @@ class Policer : public PolicerBase {
  private:
   std::shared_ptr<DefaultContract> default_contract_;
   std::unordered_map<uint32_t, std::shared_ptr<Contract>> contracts_;
+
+  // Thread to refill buckets
+  std::thread buckets_refill_thread_;
+  std::atomic<bool> quit_thread_;
+  // Mutex to access contracts
+  std::mutex contracts_mutex_;
+
+  void refillBuckets();
 };

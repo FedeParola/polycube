@@ -120,16 +120,9 @@ void Contract::updateData(ContractUpdateDataInputJsonObject input) {
 }
 
 void Contract::updateDataplane() {
-  struct bucket bucket = {
-    .tokens = burst_limit_ * 1000000,
-    .refill_rate = rate_limit_,
-    .capacity = burst_limit_ * 1000000,
-    .last_update = 0
-  };
-
   struct contract contract = {
     .action = static_cast<uint8_t>(action_),
-    .bucket = bucket
+    .tokens = (int64_t)burst_limit_
   };
 
   parent_.get_hash_table<uint32_t, struct contract>("contracts")

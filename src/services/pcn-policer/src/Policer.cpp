@@ -24,10 +24,16 @@ Policer::Policer(const std::string name, const PolicerJsonObject &conf)
   default_contract_ =
       std::make_shared<DefaultContract>(*this, conf.getDefaultContract());
   addContractList(conf.getContract());
+
+  quit_thread_ = false;
+  buckets_refill_thread_ = std::thread(&Policer::refillBuckets, this);
 }
 
 Policer::~Policer() {
   logger()->info("Destroying Policer instance");
+
+  quit_thread_ = true;
+  buckets_refill_thread_.join();
 }
 
 void Policer::packet_in(polycube::service::Direction direction,
@@ -131,4 +137,22 @@ void Policer::delContractList() {
   contracts_.clear();
 
   logger()->info("Contract list deleted");
+}
+
+void Policer::refillBuckets() {
+  while (!quit_thread_) {
+    sleep(1);
+
+    //std::lock_guard<std::mutex> guard(contracts_mutex_);
+
+    if (default_contract_->getAction() == ActionTypeEnum::LIMIT) {
+      default_contract_->updateDataplane();
+    }
+
+    for (auto &entry : contracts_) {
+      if (entry.second->getAction() == ActionTypeEnum::LIMIT) {
+        entry.second->updateDataplane();
+      }
+    }
+  }
 }
