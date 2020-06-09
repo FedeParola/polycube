@@ -53,4 +53,7 @@ class Contract : public ContractBase {
   uint32_t traffic_class_;
   ActionTypeEnum action_;
   uint64_t rate_limit_;
+
+  // Serializes update of the dataplane
+  std::mutex mutex_;
 };

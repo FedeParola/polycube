@@ -107,6 +107,8 @@ void Contract::updateData(ContractUpdateDataInputJsonObject input) {
 }
 
 void Contract::updateDataplane() {
+  std::lock_guard<std::mutex> guard(mutex_);
+  
   struct contract contract = {
     .action = static_cast<uint8_t>(action_),
     .tokens = (int64_t)rate_limit_
