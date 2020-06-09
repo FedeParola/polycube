@@ -47,4 +47,7 @@ class DefaultContract : public DefaultContractBase {
  private:
   ActionTypeEnum action_;
   uint64_t rate_limit_;
+
+  // Serializes update of the dataplane
+  std::mutex mutex_;
 };
