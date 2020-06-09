@@ -80,6 +80,8 @@ std::vector<std::shared_ptr<Contract>> Policer::getContractList() {
 
 void Policer::addContract(const uint32_t &trafficClass,
                           const ContractJsonObject &conf) {
+  std::lock_guard<std::mutex> guard(contracts_mutex_);
+
   if (contracts_.count(trafficClass) != 0) {
     throw std::runtime_error("Contract for the given class already registered");
   }
@@ -94,6 +96,8 @@ void Policer::addContract(const uint32_t &trafficClass,
 }
 
 void Policer::addContractList(const std::vector<ContractJsonObject> &conf) {
+  std::lock_guard<std::mutex> guard(contracts_mutex_);
+
   if (conf.size() == 0) {
     return;
   }
@@ -124,6 +128,8 @@ void Policer::replaceContract(const uint32_t &trafficClass,
 }
 
 void Policer::delContract(const uint32_t &trafficClass) {
+  std::lock_guard<std::mutex> guard(contracts_mutex_);
+
   if (contracts_.count(trafficClass) == 0) {
     throw std::runtime_error("No contract registered for the given class");
   }
@@ -134,6 +140,8 @@ void Policer::delContract(const uint32_t &trafficClass) {
 }
 
 void Policer::delContractList() {
+  std::lock_guard<std::mutex> guard(contracts_mutex_);
+
   contracts_.clear();
 
   logger()->info("Contract list deleted");
@@ -143,15 +151,17 @@ void Policer::refillBuckets() {
   while (!quit_thread_) {
     sleep(1);
 
-    //std::lock_guard<std::mutex> guard(contracts_mutex_);
+    {
+      std::lock_guard<std::mutex> guard(contracts_mutex_);
 
-    if (default_contract_->getAction() == ActionTypeEnum::LIMIT) {
-      default_contract_->updateDataplane();
-    }
+      if (default_contract_->getAction() == ActionTypeEnum::LIMIT) {
+        default_contract_->updateDataplane();
+      }
 
-    for (auto &entry : contracts_) {
-      if (entry.second->getAction() == ActionTypeEnum::LIMIT) {
-        entry.second->updateDataplane();
+      for (auto &entry : contracts_) {
+        if (entry.second->getAction() == ActionTypeEnum::LIMIT) {
+          entry.second->updateDataplane();
+        }
       }
     }
   }
