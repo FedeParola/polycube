@@ -148,9 +148,9 @@ void Policer::delContractList() {
 }
 
 void Policer::refillBuckets() {
-  while (!quit_thread_) {
-    sleep(1);
+  auto t = std::chrono::system_clock::now();
 
+  while (!quit_thread_) {
     {
       std::lock_guard<std::mutex> guard(contracts_mutex_);
 
@@ -164,5 +164,8 @@ void Policer::refillBuckets() {
         }
       }
     }
+
+    std::this_thread::sleep_until(t + std::chrono::seconds(1));
+    t = std::chrono::system_clock::now();
   }
 }
