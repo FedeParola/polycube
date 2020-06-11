@@ -37,7 +37,11 @@ add_service(transparenthelloworld pcn-transparent-helloworld)
 add_service(synflood pcn-synflood)
 add_service(packetcapture pcn-packetcapture)
 add_service(dynmon pcn-dynmon)
+<<<<<<< HEAD
 add_service(gtphandler pcn-gtphandler)
+=======
+add_service(classifier pcn-classifier)
+>>>>>>> classifier-single-program
 
 # save string to create code that load the services
 SET_PROPERTY(GLOBAL PROPERTY LOAD_SERVICES_ ${LOAD_SERVICES})
