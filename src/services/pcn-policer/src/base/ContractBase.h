@@ -46,12 +46,12 @@ class ContractBase {
   virtual uint32_t getTrafficClass() = 0;
 
   /// <summary>
-  /// Action applied to traffic of the contract: PASS &#x3D; Let all the traffic pass without limitations; LIMIT &#x3D; Apply rate and burst limits to selected traffic; DROP &#x3D; Drop all the traffic
+  /// Action applied to traffic of the contract: PASS &#x3D; Let all the traffic pass without limitations; LIMIT &#x3D; Apply rate limit to selected traffic; DROP &#x3D; Drop all the traffic
   /// </summary>
   virtual ActionTypeEnum getAction() = 0;
 
   /// <summary>
-  /// Maximum average traffic rate (in bps)
+  /// Maximum average traffic rate (in kbit/s)
   /// </summary>
   virtual uint64_t getRateLimit() = 0;
   virtual void updateData(ContractUpdateDataInputJsonObject input) = 0;
