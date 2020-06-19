@@ -118,7 +118,7 @@ void DefaultContract::updateDataplane() {
   struct window window = {
     .start = 0,
     .size = rate_limit_ ? burst_limit_ * 1000000000 / rate_limit_ : 0,
-    .rate = rate_limit_
+    .rate = rate_limit_ * 1000
   };
 
   struct contract contract = {
