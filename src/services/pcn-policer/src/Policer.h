@@ -24,7 +24,8 @@
 
 struct contract {
   uint8_t action;
-  int64_t tokens;
+  int64_t counter;  // Counter of bits that can still be forwarded in the
+                    // current window
 };
 
 using namespace polycube::service::model;

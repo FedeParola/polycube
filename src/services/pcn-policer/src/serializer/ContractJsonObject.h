@@ -50,7 +50,7 @@ public:
   bool trafficClassIsSet() const;
 
   /// <summary>
-  /// Action applied to traffic of the contract: PASS &#x3D; Let all the traffic pass without limitations; LIMIT &#x3D; Apply rate and burst limits to selected traffic; DROP &#x3D; Drop all the traffic
+  /// Action applied to traffic of the contract: PASS &#x3D; Let all the traffic pass without limitations; LIMIT &#x3D; Apply rate limit to selected traffic; DROP &#x3D; Drop all the traffic
   /// </summary>
   ActionTypeEnum getAction() const;
   void setAction(ActionTypeEnum value);
@@ -59,7 +59,7 @@ public:
   static ActionTypeEnum string_to_ActionTypeEnum(const std::string &str);
 
   /// <summary>
-  /// Maximum average traffic rate (in bps)
+  /// Maximum average traffic rate (in kbit/s)
   /// </summary>
   uint64_t getRateLimit() const;
   void setRateLimit(uint64_t value);

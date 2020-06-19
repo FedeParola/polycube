@@ -26,7 +26,8 @@ enum {
 
 struct contract {
   u8 action;
-  s64 tokens;
+  s64 counter;  // Counter of bits that can still be forwarded in the current
+                // window
 };
 
 #define MAX_CONTRACTS 100000
@@ -44,13 +45,13 @@ static inline int limit_rate(struct CTXTYPE *ctx, struct contract *contract) {
   void *data = (void *)(long)ctx->data;
   void *data_end = (void *)(long)ctx->data_end;
   
-  int needed_tokens = (data_end - data) * 8;
+  int size = (data_end - data) * 8;
   
-  if (contract->tokens < needed_tokens) {
+  if (contract->counter < size) {
     return RX_DROP;
   }
   
-  __sync_fetch_and_add(&contract->tokens, -needed_tokens);
+  __sync_fetch_and_add(&contract->counter, -size);
   
   return RX_OK;
 }

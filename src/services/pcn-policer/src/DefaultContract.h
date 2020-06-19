@@ -29,12 +29,12 @@ class DefaultContract : public DefaultContractBase {
   DefaultContractJsonObject toJsonObject();
 
   /// <summary>
-  /// Action applied to traffic of the contract: PASS &#x3D; Let all the traffic pass without limitations; LIMIT &#x3D; Apply rate and burst limits to selected traffic; DROP &#x3D; Drop all the traffic
+  /// Action applied to traffic of the contract: PASS &#x3D; Let all the traffic pass without limitations; LIMIT &#x3D; Apply rate limit to selected traffic; DROP &#x3D; Drop all the traffic
   /// </summary>
   ActionTypeEnum getAction() override;
 
   /// <summary>
-  /// Maximum average traffic rate (in bps)
+  /// Maximum average traffic rate (in kbit/s)
   /// </summary>
   uint64_t getRateLimit() override;
 
