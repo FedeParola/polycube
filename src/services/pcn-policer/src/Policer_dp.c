@@ -53,19 +53,19 @@ static inline int limit_rate(struct CTXTYPE *ctx, struct contract *contract) {
   void *data = (void *)(long)ctx->data;
   void *data_end = (void *)(long)ctx->data_end;
 
-  u64 needed_time = (data_end - data) * 8 * 1000000000 / window->rate;
+  u64 tx_time = (data_end - data) * 8 * 1000000000 / window->rate;
 
   u64 now = bpf_ktime_get_ns();
   
   bpf_spin_lock(&contract->lock);
 
-  if (window->start + needed_time > now) {
+  if (window->start + tx_time > now) {
     retval = RX_DROP;
   } else if (window->start + window->size < now) {
-    window->start = now - window->size + needed_time;
+    window->start = now - window->size + tx_time;
     retval = RX_OK;
   } else {
-    window->start += needed_time;
+    window->start += tx_time;
     retval = RX_OK;
   }
 
