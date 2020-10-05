@@ -21,6 +21,9 @@ Policer::Policer(const std::string name, const PolicerJsonObject &conf)
   : TransparentCube(conf.getBase(), {policer_code}, {policer_code}), PolicerBase(name) {
   logger()->info("Creating Policer instance");
 
+  quit_thread_ = false;
+  clock_update_thread_ = std::thread(&Policer::updateClock, this);
+
   default_contract_ =
       std::make_shared<DefaultContract>(*this, conf.getDefaultContract());
   addContractList(conf.getContract());
@@ -131,4 +134,17 @@ void Policer::delContractList() {
   contracts_.clear();
 
   logger()->info("Contract list deleted");
+}
+
+void Policer::updateClock() {
+  uint64_t clock = 0;
+  auto begin = std::chrono::system_clock::now();
+
+  while (!quit_thread_) {
+    auto clock_table = get_percpuarray_table<uint64_t>("clock");
+    clock_table.set(0, clock * 1000000);
+
+    clock++;
+    std::this_thread::sleep_until(begin + std::chrono::milliseconds(clock));
+  }
 }

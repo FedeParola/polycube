@@ -41,13 +41,16 @@ struct contract {
 #if POLYCUBE_PROGRAM_TYPE == 1  // EGRESS
 BPF_TABLE("extern", int, struct contract, default_contract, 1);
 BPF_TABLE("extern", u32, struct contract, contracts, MAX_CONTRACTS);
+BPF_TABLE("extern", int, uint64_t, clock, 1);
 #else  // INGRESS
 BPF_TABLE_SHARED("array", int, struct contract, default_contract, 1);
 BPF_TABLE_SHARED("hash", u32, struct contract, contracts, MAX_CONTRACTS);
+BPF_TABLE_SHARED("percpu_array", int, uint64_t, clock, 1);
 #endif
 
 
 static inline int limit_rate(struct CTXTYPE *ctx, struct contract *contract) {
+  int zero = 0;
   u8 retval;
   struct window *window = &contract->window;
   void *data = (void *)(long)ctx->data;
@@ -55,7 +58,12 @@ static inline int limit_rate(struct CTXTYPE *ctx, struct contract *contract) {
 
   u64 tx_time = (data_end - data) * 8 * 1000000000 / window->rate;
 
-  u64 now = bpf_ktime_get_ns();
+  u64 *clock_p = clock.lookup(&zero);
+  if (!clock_p) {
+    return RX_DROP;
+  }
+
+  u64 now = *clock_p;
   
   bpf_spin_lock(&contract->lock);
 
