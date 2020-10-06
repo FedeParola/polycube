@@ -127,7 +127,8 @@ void DefaultContract::updateDataplane() {
     .bucket = bucket
   };
 
-  parent_.get_array_table<struct contract>("default_contract").set(0, contract);
+  parent_.get_percpuarray_table<struct contract>("default_contract")
+      .set(0, contract);
 }
 
 std::string DefaultContract::toString() {

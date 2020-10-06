@@ -132,7 +132,7 @@ void Contract::updateDataplane() {
     .bucket = bucket
   };
 
-  parent_.get_hash_table<uint32_t, struct contract>("contracts")
+  parent_.get_percpuhash_table<uint32_t, struct contract>("contracts")
          .set(traffic_class_, contract);
 }
 

@@ -44,8 +44,8 @@ BPF_TABLE("extern", int, struct contract, default_contract, 1);
 BPF_TABLE("extern", u32, struct contract, contracts, MAX_CONTRACTS);
 BPF_TABLE("extern", int, uint64_t, clock, 1);
 #else  // INGRESS
-BPF_TABLE_SHARED("array", int, struct contract, default_contract, 1);
-BPF_TABLE_SHARED("hash", u32, struct contract, contracts, MAX_CONTRACTS);
+BPF_TABLE_SHARED("percpu_array", int, struct contract, default_contract, 1);
+BPF_TABLE_SHARED("percpu_hash", u32, struct contract, contracts, MAX_CONTRACTS);
 BPF_TABLE_SHARED("percpu_array", int, uint64_t, clock, 1);
 #endif
 
@@ -62,8 +62,6 @@ static inline int limit_rate(struct CTXTYPE *ctx, struct contract *contract) {
   }
 
   u64 now = *clock_p;  // In ms
-
-  bpf_spin_lock(&contract->lock);
 
   // Refill tokens
   if (now > bucket->last_refill){
@@ -86,8 +84,6 @@ static inline int limit_rate(struct CTXTYPE *ctx, struct contract *contract) {
   } else {
     retval = RX_DROP;
   }
-
-  bpf_spin_unlock(&contract->lock);
 
   return retval;
 }
