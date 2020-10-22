@@ -1,0 +1,18 @@
+module redirect {
+  yang-version 1.1;
+  namespace "http://polycube.network/redirect";
+  prefix "redirect";
+
+  import polycube-base { prefix "polycube-base"; }
+  import polycube-standard-base { prefix "polycube-standard-base"; }
+
+  organization "Polycube open source project";
+  description "YANG data model for the Polycube Redirect service";
+
+  polycube-base:service-description "Redirect Service";
+  polycube-base:service-version "1.0";
+  polycube-base:service-name "redirect";
+  polycube-base:service-min-kernel-version "4.14.0";
+
+  uses "polycube-standard-base:standard-base-yang-module";
+}
