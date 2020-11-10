@@ -31,6 +31,9 @@ Policer::Policer(const std::string name, const PolicerJsonObject &conf)
 
 Policer::~Policer() {
   logger()->info("Destroying Policer instance");
+
+  quit_thread_ = true;
+  clock_update_thread_.join();
 }
 
 void Policer::packet_in(polycube::service::Direction direction,
