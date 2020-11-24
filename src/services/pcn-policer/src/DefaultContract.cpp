@@ -116,7 +116,7 @@ void DefaultContract::updateData(
 
 void DefaultContract::updateDataplane() {
   struct bucket bucket = {
-    .tokens = burst_limit_ * 1000,
+    .tokens = (int64_t)burst_limit_ * 1000,
     .refill_rate = rate_limit_,
     .capacity = burst_limit_ * 1000,
     .last_refill = 0

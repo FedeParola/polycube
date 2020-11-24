@@ -23,7 +23,7 @@
 #define MAX_CONTRACTS 100000
 
 struct bucket {
-  uint64_t tokens;
+  int64_t tokens;
   uint64_t refill_rate;  // tokens/ms
   uint64_t capacity;
   uint64_t last_refill;  // Timestamp of the last time the bucket was refilled
