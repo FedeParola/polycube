@@ -19,13 +19,16 @@
 #include <uapi/linux/bpf.h>
 #include <uapi/linux/filter.h>
 #include <uapi/linux/icmp.h>
-#include <uapi/linux/if_arp.h>
+// #include <uapi/linux/if_arp.h>
 #include <uapi/linux/if_ether.h>
 #include <uapi/linux/if_packet.h>
 #include <uapi/linux/in.h>
 #include <uapi/linux/ip.h>
 #include <uapi/linux/pkt_cls.h>
 #include <uapi/linux/udp.h>
+
+#define	ARPOP_REQUEST	1		/* ARP request			*/
+#define	ARPOP_REPLY	2		/* ARP reply			*/
 
 #define CHECK_MAC_DST
 #define ROUTING_TABLE_DIM 100000
