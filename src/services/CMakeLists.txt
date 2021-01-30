@@ -37,11 +37,9 @@ add_service(transparenthelloworld pcn-transparent-helloworld)
 add_service(synflood pcn-synflood)
 add_service(packetcapture pcn-packetcapture)
 add_service(dynmon pcn-dynmon)
-<<<<<<< HEAD
 add_service(gtphandler pcn-gtphandler)
-=======
 add_service(policer pcn-policer)
->>>>>>> policer-token-bucket-lockless
+add_service(classifier pcn-classifier)
 
 # save string to create code that load the services
 SET_PROPERTY(GLOBAL PROPERTY LOAD_SERVICES_ ${LOAD_SERVICES})
