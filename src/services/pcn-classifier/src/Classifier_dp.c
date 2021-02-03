@@ -35,6 +35,8 @@
 #include <uapi/linux/tcp.h>
 
 
+#define FIELDS_COUNT 8
+
 struct eth_hdr {
   __be64 dst : 48;
   __be64 src : 48;
@@ -56,10 +58,6 @@ struct bitvector {
   u64 bits[_SUBVECTS_COUNT];
 };
 
-// Packet bitvector is stored into a percpu array to avoid exceeding the maximum
-// stack size of 512 bytes
-BPF_PERCPU_ARRAY(pkt_bitvector, struct bitvector, 1);
-
 BPF_ARRAY(class_ids, u32, _CLASSES_COUNT);
 
 BPF_TABLE("extern", int, u16, index64, 64);
@@ -69,7 +67,8 @@ _MATCHING_TABLES
 
 static int handle_rx(struct CTXTYPE *ctx, struct pkt_metadata *md) {
   pcn_log(ctx, LOG_TRACE, "_DIRECTION parser: processing packet");
-
+  
+  int zero = 0;
   void *data = (void *)(long)ctx->data;
   void *data_end = (void *)(long)ctx->data_end;
 
@@ -122,27 +121,29 @@ static int handle_rx(struct CTXTYPE *ctx, struct pkt_metadata *md) {
 #endif  // _PARSE_L3 || _PARSE_L4
 
 CONTINUE:;
-  int zero = 0;
-  struct bitvector *pkt_bv = pkt_bitvector.lookup(&zero);
-  if (!pkt_bv) {
-    return RX_DROP;
-  }
-
-  // Initialize packet bitvector
-  for (int i = 0; i < _SUBVECTS_COUNT; i++) {
-    pkt_bv->bits[i] = 0xffffffffffffffff;
-  }
+  struct bitvector *bitvectors[FIELDS_COUNT];
+  int current_bitvector = 0;
 
 
   _MATCHING_CODE
 
 
+  u64 subvector;
   int matching_class_index = -1;
   u16 *matching_res;
   for (int i = 0; i < _SUBVECTS_COUNT; i++) {
-    u64 bits = pkt_bv->bits[i];
-    if (bits != 0) {
-      int index = (int)(((bits ^ (bits - 1)) * 0x03f79d71b4cb0a89) >> 58);
+    subvector = bitvectors[0]->bits[i];
+
+    for (int j = 1; j < current_bitvector; j++) {
+      if (!subvector) {
+        break;
+      }
+      subvector &= bitvectors[j]->bits[i];
+    }
+
+    if (subvector) {
+      int index =
+          (int)(((subvector ^ (subvector - 1)) * 0x03f79d71b4cb0a89) >> 58);
 
       matching_res = index64.lookup(&index);
       if (!matching_res) {
