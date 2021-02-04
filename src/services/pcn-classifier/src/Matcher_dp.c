@@ -32,12 +32,12 @@
   _TYPE key = pkt._FIELD;
 #endif
 
-  struct bitvector *rule_bv = _FIELD_rules.lookup(&key);
+  struct bitvector *bv = _FIELD_rules.lookup(&key);
 
-  if (!rule_bv) {
+  if (!bv) {
 #if !_PREFIX_MATCHER && _WILDCARD
-    rule_bv = _FIELD_wildcard_bv.lookup(&zero);
-    if (!rule_bv) {
+    bv = _FIELD_wildcard_bv.lookup(&zero);
+    if (!bv) {
       return RX_DROP;
     }
 #else
@@ -49,23 +49,10 @@
 #endif
   }
 
+  bitvectors[current_bitvector] = bv;
+
   pcn_log(ctx, LOG_TRACE, "_DIRECTION _FIELD matcher: match found");
 
-  bool is_all_zero = true;
-
-  for (int i = 0; i < _SUBVECTS_COUNT; i++) {
-    pkt_bv->bits[i] &= rule_bv->bits[i];
-
-    if (pkt_bv->bits[i]) {
-      is_all_zero = false;
-    }
-  }
-
-  if (is_all_zero) {
-    pcn_log(ctx, LOG_TRACE,
-            "_DIRECTION _FIELD matcher: empty bitvector, early stop of "
-            "classification");
-    return RX_OK;
-  }
+  current_bitvector++;
 }
 
