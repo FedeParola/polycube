@@ -131,6 +131,16 @@ CONTINUE:;
   u64 subvector;
   int matching_class_index = -1;
   u16 *matching_res;
+
+// The following error is raised by the verifier when the number of subvector
+// exceedes 128:
+// "back-edge from insn 90 to 91"
+// Seems to be something related to the optimizer, this workaround fixes the
+// problem but might reduce performance when active
+// Might be fixed just updating the version of Clang/LLVM
+#if _SUBVECTS_COUNT > 128
+#pragma nounroll
+#endif
   for (int i = 0; i < _SUBVECTS_COUNT; i++) {
     subvector = bitvectors[0]->bits[i];
 
